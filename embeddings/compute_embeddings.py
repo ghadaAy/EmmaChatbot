@@ -57,6 +57,7 @@ def compute_doc_embeddings(df: pd.DataFrame)->dict:
 
 if __name__=="__main__":
     df = pd.read_csv('data\df_tokenized.csv')
+    df = df.dropna()
     print('embeddings began')
     context_embeddings = compute_doc_embeddings(df)
     print("saving to json")
