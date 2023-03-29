@@ -43,8 +43,6 @@ def construct_prompt(question: str, context_embeddings: dict, df: pd.DataFrame) 
     chosen_sections_len = 0
     chosen_sections_indexes = []
     for _, section_index in most_relevant_document_sections:
-        print(df.loc[int(section_index)])
-
         if len(df.loc[int(section_index)].text)<3:
             pass
         else:
