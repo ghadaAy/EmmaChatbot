@@ -1,0 +1,150 @@
+<html>
+<head>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      width: 80%;
+      max-width: 800px;
+      margin: 20px auto;
+      font-family: Arial, sans-serif;
+    }
+
+    .title {
+      text-align: center;
+      font-size: 36px;
+      color: #333;
+    }
+
+    .chatbox {
+      border: 2px solid #ccc;
+      border-radius: 10px;
+      padding: 10px;
+      overflow-y: auto;
+      height: 400px;
+      position:relative;
+    }
+
+    .message {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    div.user {
+      flex: 1;
+      text-align: right;
+      background-color: #f1aaff;
+      padding: 5px 10px;
+      border-radius: 10px;
+      /* align-items: right; */
+      margin-left: 50%;
+      max-width: 70%;
+    }
+
+
+    .assistant {
+      flex: 1;
+      text-align: left;
+      display: inline-block;
+        background-color: #e0e0e0;
+        padding: 5px 10px;
+        border-radius: 10px;
+        max-width: 70%;
+    }
+
+    
+    .assistant span {
+      display: inline-block;
+      background-color: #e0e0e0;
+      padding: 5px 10px;
+      border-radius: 10px;
+      max-width: 70%;
+    }
+
+    .inputbox {
+      display: flex;
+      align-items: center;
+      margin-top: 10px;
+    }
+
+    .inputbox input {
+      flex: 1;
+      border: none;
+      outline: none;
+      padding: 10px;
+      font-size: 18px;
+    }
+
+    .inputbox button {
+      width: 100px;
+      border: none;
+      outline: none;
+      background-color: #ccc;
+      color: #fff;
+      font-size: 18px;
+      cursor: pointer;
+    }
+    
+    .inputbox button:hover {
+        background-color:#999
+        }
+ 
+</style>
+</head>
+<body>
+<div class="container">
+    <h1 class="title">EmmaChatBot</h1>
+    <div class="chatbox" id="chatbox">
+        <div class="assistant message" id="assistant">
+            <span>Hello, this is EmmaBot. How can I help? 😊</span>
+        </div>
+
+      
+    </div>
+
+    <div class="inputbox">
+        <input type="text" id="userInput" placeholder="Type your message here...">
+        <button id="sendButton" onClick="getReplyToQuestion()">Send</button>
+    </div>
+</div>
+
+<script>
+    async function getReplyToQuestion() {
+        console.log('button clicked, API being called')
+
+        var parent_div = document.getElementById("chatbox");
+
+        var user_div = document.createElement("div");
+            user_div.setAttribute("class", "user");
+            user_div.innerHTML = this.userInput.value;
+            parent_div.appendChild(user_div);
+
+        // ass_div.parentNode.insertBefore(user_div, ass_div.nextSibling);
+        // document.getElementById("user_space").innerHTML = this.userInput.value
+        const response = await fetch("http://localhost:7071/api/HttpAnswer", {
+			method: 'POST',
+			headers: {
+				'Accept': 'application/json',
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify({
+				question: this.userInput.value
+			}),
+		});
+    
+    response.json().then(data => {
+      
+        var ass_div = document.createElement("div");
+            ass_div.setAttribute("class", "assistant message");
+            ass_div.innerHTML = data.answer
+            parent_div.appendChild(ass_div);
+            });
+        }
+
+
+</script>
