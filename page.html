@@ -35,18 +35,20 @@
       margin-bottom: 10px;
     }
 
-    div.user {
+    .user {
+      /* display: inline-block; */
       flex: 1;
       text-align: right;
-      background-color: #f1aaff;
-      padding: 5px 10px;
-      border-radius: 10px;
-      /* align-items: right; */
-      margin-left: 50%;
-      max-width: 70%;
+      margin-bottom: 1.5%;
     }
 
-
+    .user span {
+      display: inline-block;
+      background-color: #f0d509;
+      padding: 5px 10px;
+      border-radius: 10px;
+      max-width: 70%;
+    }
     .assistant {
       flex: 1;
       text-align: left;
@@ -69,7 +71,7 @@
     .inputbox {
       display: flex;
       align-items: center;
-      margin-top: 10px;
+      margin-top: 1%;
     }
 
     .inputbox input {
@@ -114,14 +116,24 @@
 </div>
 
 <script>
+
+    var input = document.getElementById("userInput");
+    input.addEventListener("keypress", function(event) {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        document.getElementById("sendButton").click();
+      }
+    });
+
     async function getReplyToQuestion() {
         console.log('button clicked, API being called')
 
         var parent_div = document.getElementById("chatbox");
-
+        var user_span = document.createElement("span");
         var user_div = document.createElement("div");
             user_div.setAttribute("class", "user");
-            user_div.innerHTML = this.userInput.value;
+            user_span.innerHTML = this.userInput.value;
+            user_div.appendChild(user_span);
             parent_div.appendChild(user_div);
 
         // ass_div.parentNode.insertBefore(user_div, ass_div.nextSibling);

@@ -1,7 +1,11 @@
+# DO NOT include azure-functions-worker in this file
+# The Python Worker is managed by Azure Functions platform
+# Manually managing azure-functions-worker may cause unexpected issues
+
+azure-functions
 nltk==3.8
 numpy==1.24.0
 openai
 pandas==1.5.2
 tqdm==4.64.1
 transformers==4.25.1
-#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
