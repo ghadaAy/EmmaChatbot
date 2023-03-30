@@ -36,7 +36,6 @@ def construct_prompt(question: str, context_embeddings: dict, df: pd.DataFrame) 
     """
     Fetch relevant 
     """
-    df = df.fillna('')
     most_relevant_document_sections = order_document_sections_by_query_similarity(question, context_embeddings)
     
     chosen_sections = []
@@ -68,7 +67,7 @@ def answer_query_with_context(
         df
     )
     if show_prompt:
-        print(prompt)
+        pass
     response = openai.Completion.create(
                 prompt=prompt,
                 **COMPLETIONS_API_PARAMS
