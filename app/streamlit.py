@@ -18,6 +18,12 @@ context_embeddings, df = read_embeddings()
 st.title("EmmaChatBot")
 
 # Storing the chat
+if 'memory' not in st.session_state:
+    st.session_state['memory'] = []
+
+if 'nb_calls' not in st.session_state:
+    st.session_state['nb_calls'] = [0]
+
 if 'generated' not in st.session_state:
     st.session_state['generated'] = []
 
@@ -30,10 +36,13 @@ user_input = st.text_input("You: ","", key=f"input")
 if user_input:
     print('hey2')
     with st.spinner("Answering your question"):
-        output = answer_query_with_context(user_input, df, context_embeddings)
+        output, memory = answer_query_with_context(user_input, df, context_embeddings, "\n".join(st.session_state.memory))
     # store the output 
+    st.session_state.memory[0]=f"{memory}\n question{st.session_state.nb_calls[0]}:{user_input} reply:{output}"
     st.session_state.past.append(user_input)
     st.session_state.generated.append(output)
+    st.session_state.nb_calls[0]+=1
+    print(st.session_state.memory, st.session_state.nb_calls[0] )
 
 if st.session_state['generated']:
     

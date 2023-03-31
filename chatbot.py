@@ -5,7 +5,6 @@ import pandas as pd
 from embeddings.compute_embeddings import get_doc_embedding
 from configparser import ConfigParser
 import openai
-from configparser import ConfigParser
 
 
 configur = ConfigParser()
@@ -15,8 +14,8 @@ openai.api_key = configur.get('API','OPEN_AI_API')
 COMPLETIONS_MODEL = configur.get('MODELS','COMPLETIONS_MODEL')
 MODEL_NAME = configur.get('MODELS','MODEL_NAME')
 MAX_COMPLETION_TOKENS = int(configur.get('MODELS','MAX_COMPLETION_TOKENS'))
-
-MAX_LEN_PROMPT = 4000-MAX_COMPLETION_TOKENS
+MAX_LEN_MEMORY = 100
+MAX_LEN_PROMPT = 300-MAX_COMPLETION_TOKENS
 DOC_EMBEDDINGS_MODEL = f"text-search-{MODEL_NAME}-doc-001"
 SEPARATOR = "\n* "
 HEADER = """Answer the question as truthfully as possible using the provided context, and if the answer is not contained within the text below, say "I don't know. Can you try asking the question differently?"\n\nContext:\n"""
@@ -32,10 +31,17 @@ COMPLETIONS_API_PARAMS = {
     "model": COMPLETIONS_MODEL,
 }
 
-def construct_prompt(question: str, context_embeddings: dict, df: pd.DataFrame) -> str:
+def construct_prompt(question: str, context_embeddings: dict, df: pd.DataFrame, memory:str='') -> str:
     """
     Fetch relevant 
     """
+    i=0
+    if len(tokenizer.tokenize(memory))>MAX_LEN_MEMORY:
+        print("im here")
+        memories = memory.split('\n')
+        while len(tokenizer.tokenize(memory))>MAX_LEN_MEMORY:
+            memory ="\n".join(memories[i:])
+            i+=1
     most_relevant_document_sections = order_document_sections_by_query_similarity(question, context_embeddings)
     
     chosen_sections = []
@@ -47,36 +53,43 @@ def construct_prompt(question: str, context_embeddings: dict, df: pd.DataFrame) 
         else:
             document_section = df.loc[int(section_index)]
             chosen_sections_len += document_section.tokens + separator_len
-            if chosen_sections_len > MAX_LEN_PROMPT-len(tokenizer.tokenize(HEADER))-len(tokenizer.tokenize( "\n\n Q: " + question + "\n A:")):
+            if chosen_sections_len > MAX_LEN_PROMPT-len(tokenizer.tokenize(memory))-len(tokenizer.tokenize(HEADER))-len(tokenizer.tokenize( "\n\n Q: " + question + "\n A:")):
                 break
             chosen_sections.append(SEPARATOR + document_section.text.replace("\n", " "))
             chosen_sections_indexes.append(section_index)
     
-    return HEADER +"".join(chosen_sections) + "\n\n Q: " + question + "\n A:"
+    return HEADER +memory+"".join(chosen_sections) + "\n\n Q: " + question + "\n A:", memory
 
 
 def answer_query_with_context(
     query: str,
     df: pd.DataFrame,
     document_embeddings: dict,
-    show_prompt: bool = False
+    memory:str
 ) -> str:
-    prompt = construct_prompt(
+    prompt, memory = construct_prompt(
         query,
         document_embeddings,
-        df
+        df, memory=memory
     )
-    if show_prompt:
-        pass
+    
     response = openai.Completion.create(
                 prompt=prompt,
                 **COMPLETIONS_API_PARAMS
             )
     answer = response["choices"][0]["text"].strip(" \n")
-    return answer
+    
+    return answer, memory
 
-def answer_question(question: str)->str:
-    context_embeddings = read_context_embeddings("embeddings/context_embeddings.json")
-    df = pd.read_csv('.\data\df_tokenized.csv')    
-    answer = answer_query_with_context(question, df, context_embeddings)
-    return answer
+# context_embeddings = read_context_embeddings("embeddings/context_embeddings.json")
+# df = pd.read_csv('.\data\df_tokenized.csv')   
+# df = df.fillna('')
+# i=0
+# memory=''
+# while True:
+#     question = input('question:')
+#     i+=1
+#     answer, memory = answer_query_with_context(question, df, context_embeddings, memory)
+#     memory = f"{memory}\nquestion{i}:{question} reply:{answer}"   
+#     print(answer)
+#     print('__________________')
