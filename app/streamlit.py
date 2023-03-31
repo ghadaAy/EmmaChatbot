@@ -19,7 +19,7 @@ st.title("EmmaChatBot")
 
 # Storing the chat
 if 'memory' not in st.session_state:
-    st.session_state['memory'] = []
+    st.session_state['memory'] = ['']
 
 if 'nb_calls' not in st.session_state:
     st.session_state['nb_calls'] = [0]
