@@ -1,5 +1,6 @@
 from .compute_embeddings import get_doc_embedding
 import numpy as np
+THRESH = .6
 
 def vector_similarity(x: list, y: list)->float:
     """
@@ -22,7 +23,7 @@ def order_document_sections_by_query_similarity(query: str, contexts: dict)->lis
     """
     query_embedding = get_doc_embedding(query)
     document_similarities = sorted([
-        (vector_similarity(query_embedding, doc_embedding), doc_index) for doc_index, doc_embedding in contexts.items()
+        (vector_similarity(query_embedding, doc_embedding), doc_index) for doc_index, doc_embedding in contexts.items() if vector_similarity(query_embedding, doc_embedding)>THRESH
     ], reverse=True)
     
     return document_similarities

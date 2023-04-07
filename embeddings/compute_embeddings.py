@@ -11,9 +11,14 @@ import numpy as np
 from transformers import GPT2TokenizerFast
 #from utils.utils import read_cfg_file
 import json
+import openai
+from configparser import ConfigParser
 
-#openai.api_key, COMPLETIONS_MODEL, MODEL_NAME = read_cfg_file(cfg_path='../cfg/cfg.ini')
-openai.api_key = "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"
+
+
+configur = ConfigParser()
+configur.read('cfg/cfg.ini')
+openai.api_key = configur.get('API','OPEN_AI_API')
 
 
 DOC_EMBEDDINGS_MODEL = "text-embedding-ada-002"
@@ -56,12 +61,12 @@ def compute_doc_embeddings(df: pd.DataFrame)->dict:
 #     }
 
 if __name__=="__main__":
-    df = pd.read_csv('data\df_tokenized.csv')
+    df = pd.read_csv('data/txt_and_len_tokenized.csv')
     df = df.dropna()
     print('embeddings began')
     context_embeddings = compute_doc_embeddings(df)
     print("saving to json")
-    with open('context_embeddings.json', 'w') as f:
+    with open('embeddings/context_embeddings_part_pdf.json', 'w') as f:
         json.dump(context_embeddings, f)
 
     print('saved')

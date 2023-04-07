@@ -10,3 +10,5 @@ pandas==1.5.2
 tqdm==4.64.1
 transformers==4.25.1
 streamlit
+PyPDF2
+camelot-py[cv]
