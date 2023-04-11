@@ -61,12 +61,12 @@ def compute_doc_embeddings(df: pd.DataFrame)->dict:
 #     }
 
 if __name__=="__main__":
-    df = pd.read_csv('data/txt_and_len_tokenized.csv')
+    df = pd.read_csv('data/brochure_fiscalite_francaise_tokenized.csv')
     df = df.dropna()
     print('embeddings began')
     context_embeddings = compute_doc_embeddings(df)
     print("saving to json")
-    with open('embeddings/context_embeddings_part_pdf.json', 'w') as f:
+    with open('embeddings/context_embeddings_entire_pdf.json', 'w') as f:
         json.dump(context_embeddings, f)
 
     print('saved')
