@@ -69,16 +69,15 @@ class PdfWrapper:
             self.number_of_pages = len(pdf.pages)
         
         for nb in tqdm(range(0, self.number_of_pages), desc="Table lookup"):
-            # try:
+            try:
                 tables = camelot.read_pdf(self.path_temp, pages=str(nb))
                 for i in range(len(tables)):
                     if tables[i].parsing_report['accuracy']>self.table_thresh:
                         df = tables[i].df
                         df = self._change_df(df)
                         self.list_tables.append(df.to_markdown())  
-            # except:
-            #     print('no')
-            #     continue
+            except:
+                continue
         text_tables = '\n'.join(self.list_tables)
         return text_tables
       

@@ -3,6 +3,7 @@ import sys
 sys.path.append('data')
 sys.path.append('embeddings')
 import json
+from joblib import parallel_backend
 
 import streamlit as st
 import pandas as pd
@@ -14,7 +15,9 @@ from pdfWrapper import PdfWrapper
 import os
 from tokenizing.tokenizer import create_tokenize_csv
 from data_utils import write_file
+import numpy as np
 from embeddings.compute_embeddings import compute_doc_embeddings
+from joblib import parallel_backend, Parallel, delayed
 
 st.set_page_config(
     page_title="upload PDF",
@@ -38,11 +41,18 @@ if uploaded_file is not None:
         with st.spinner("Tokenizing PDF"):    
             df = create_tokenize_csv([text_pages, text_tables])
             st.session_state['flag_done_upload'] = True
-
-        # with st.spinner("Embedding"):    
-        #     context_embeddings = compute_doc_embeddings(df)
-        #     with open('embeddings/context_embeddings.json', 'w') as f:
-        #         json.dump(context_embeddings, f)
+            
+      
+        
+        with st.spinner("Embedding"):   
+            df_split = np.array_split(df, indices_or_sections=100) 
+            with parallel_backend(backend='threading', n_jobs=100):
+                list_context_embeddings = Parallel()(delayed(compute_doc_embeddings)(df) for df in df_split)
+                context_embeddings = {}
+                for dictt in list_context_embeddings:
+                    context_embeddings = {**context_embeddings, **dictt}
+            with open('embeddings/context_embeddings.json', 'w') as f:
+                json.dump(context_embeddings, f)
 
         print('json saved')
 

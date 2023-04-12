@@ -13,7 +13,7 @@ from transformers import GPT2TokenizerFast
 import json
 import openai
 from configparser import ConfigParser
-
+from joblib import delayed, Parallel
 
 
 configur = ConfigParser()
@@ -45,6 +45,7 @@ def compute_doc_embeddings(df: pd.DataFrame)->dict:
       time.sleep(1)
       
     return d
+
 
 # def load_embeddings(fname: str)->dict:
 #     """
