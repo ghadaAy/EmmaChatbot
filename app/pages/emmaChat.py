@@ -10,8 +10,8 @@ import pandas as pd
 @st.cache_resource
 def read_embeddings():
     print("start")
-    context_embeddings = read_context_embeddings("embeddings/context_embeddings_part_pdf.json")
-    df = pd.read_csv('data/txt_and_len_tokenized.csv')    
+    context_embeddings = read_context_embeddings("embeddings/context_embeddings.json")
+    df = pd.read_csv('data/tokenized_csvs/pdf.csv')    
     df = df.fillna('')
     print('end')
     return context_embeddings, df

@@ -1,12 +1,11 @@
 import pandas as pd
 
-def change_df(df):
-    df.columns = df.iloc[0]
-    df = df.drop(df.index[0])
-    return df
-def define_replacement(df):
-    
-    print(df.to_markdown())
+
+def write_file(strings:list[str]):
+    txt = '\n'.join(strings)
+    with open("./data/PDFs/pdf.txt",'w',encoding="utf-8") as f:
+        f.write(txt)
+    print("pdf.txt is created")
 
 def replace_text_with_table(text:str, df):
     try:
